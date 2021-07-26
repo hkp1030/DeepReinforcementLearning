@@ -142,7 +142,8 @@ class GameState():
 		return (newState, value, done)
 
 	def render(self, logger):
-		for stone in self.board:
+		convert_board = np.reshape(self.board, (15, 15))
+		for stone in convert_board:
 			logger.info([self.pieces[str(s)] for s in stone])
 		logger.info('--------------------')
 
