@@ -42,6 +42,15 @@ class Rule(object):
                 return True
         return False
 
+    def search_gameover(self, stone):
+        for y in range(len(self.board)):
+            for x in range(len(self.board[0])):
+                if self.board[y][x] == empty:
+                    continue
+                if self.is_gameover(x, y, stone):
+                    return True
+        return False
+
     def is_six(self, x, y, stone):
         for i in range(4):
             cnt = self.get_stone_count(x, y, stone, i)
@@ -116,7 +125,7 @@ class Rule(object):
                 cnt += 1
         self.set_stone(x, y, empty)
         if cnt >= 2:
-            print("double three")
+            # print("double three")
             return True
         return False
 
@@ -130,7 +139,7 @@ class Rule(object):
                 cnt += 1
         self.set_stone(x, y, empty)
         if cnt >= 2:
-            print("double four")
+            # print("double four")
             return True
         return False
 
@@ -138,7 +147,7 @@ class Rule(object):
         if self.is_five(x, y, stone):
             return False
         elif self.is_six(x, y, stone):
-            print("overline")
+            # print("overline")
             return True
         elif self.double_three(x, y, stone) or self.double_four(x, y, stone):
             return True
