@@ -63,7 +63,7 @@ class GameState():
 
 	def _allowedActions(self):
 		if np.all(self.board == 0):
-			return [63]
+			return [112]
 
 		allowed = []
 		allowed.extend([i for i, stone in enumerate(self.board) if stone == 0])
