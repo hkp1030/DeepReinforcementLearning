@@ -137,7 +137,7 @@ def playMatches(player1, player2, EPISODES, logger, turns_until_tau0, memory = N
                     scores['drawn'] = scores['drawn'] + 1
                     sp_scores['drawn'] = sp_scores['drawn'] + 1
 
-                pts = state.score
+                pts = state.get_score()
                 points[players[state.playerTurn]['name']].append(pts[0])
                 points[players[-state.playerTurn]['name']].append(pts[1])
 

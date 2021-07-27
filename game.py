@@ -57,12 +57,15 @@ class GameState():
 		self.pieces = {'1': 'O', '0': '-', '-1': 'X'}
 		self.binary = self._binary()
 		self.id = self._convertStateToId()
-		self.allowedActions = self._allowedActions()
-		self.isEndGame = self._checkForEndGame()
-		self.value = self._getValue()
-		self.score = self._getScore()
+		self.allowedActions = None
+		self.isEndGame = None
+		self.value = None
+		self.score = None
 
-	def _allowedActions(self):
+	def get_allowed_actions(self):
+		if self.allowedActions is not None:
+			return self.allowedActions
+
 		if np.all(self.board == 0):
 			return [112]
 
@@ -74,6 +77,8 @@ class GameState():
 			while forbidden_points:
 				x, y = forbidden_points.pop()
 				allowed.remove(y*15 + x)
+
+		self.allowedActions = allowed
 
 		return allowed
 
@@ -101,28 +106,44 @@ class GameState():
 
 		return id
 
-	def _checkForEndGame(self):
+	def is_end_game(self):
+		if self.isEndGame is not None:
+			return self.isEndGame
+
 		if np.count_nonzero(self.board) == 15 * 15:
+			self.isEndGame = 1
 			return 1
 
-		if not self.allowedActions:
+		if np.count_nonzero(self.board) > 210 and not self.get_allowed_actions():
+			self.isEndGame = 1
 			return 1
 
 		if self.rule.search_gameover(-self.playerTurn):
+			self.isEndGame = 1
 			return 1
 
+		self.isEndGame = 0
 		return 0
 
-	def _getValue(self):
+	def get_value(self):
 		# This is the value of the state for the current player
 		# i.e. if the previous player played a winning move, you lose
-		if self.isEndGame == 1:
+		if self.value is not None:
+			return self.value
+
+		if self.is_end_game() == 1:
+			self.value = (-1, -1, 1)
 			return (-1, -1, 1)
 		else:
+			self.value = (0, 0, 0)
 			return (0, 0, 0)
 
-	def _getScore(self):
-		tmp = self.value
+	def get_score(self):
+		if self.score is not None:
+			return self.score
+
+		tmp = self.get_value()
+		self.score = (tmp[1], tmp[2])
 		return (tmp[1], tmp[2])
 
 	def takeAction(self, action):
@@ -134,8 +155,8 @@ class GameState():
 		value = 0
 		done = 0
 
-		if newState.isEndGame:
-			value = newState.value[0]
+		if newState.is_end_game():
+			value = newState.get_value()[0]
 			done = 1
 
 		return (newState, value, done)
@@ -145,4 +166,5 @@ class GameState():
 		for stone in convert_board:
 			logger.info([self.pieces[str(s)] for s in stone])
 		logger.info('--------------------')
+
 

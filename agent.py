@@ -114,7 +114,7 @@ class Agent():
 
 		logits = logits_array[0]
 
-		allowedActions = state.allowedActions
+		allowedActions = state.get_allowed_actions()
 
 		mask = np.ones(logits.shape,dtype=bool)
 		mask[allowedActions] = False
