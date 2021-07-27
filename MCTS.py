@@ -22,7 +22,6 @@ class Node():
 class Edge():
 
 	def __init__(self, inNode, outNode, prior, action):
-		self.id = inNode.state.id + '|' + outNode.state.id
 		self.inNode = inNode
 		self.outNode = outNode
 		self.playerTurn = inNode.state.playerTurn
@@ -94,6 +93,15 @@ class MCTS():
 			lg.logger_mcts.info('action with highest Q + U...%d', simulationAction)
 
 			newState, value, done = currentNode.state.takeAction(simulationAction) #the value of the newState from the POV of the new playerTurn
+			if simulationEdge.outNode is None:
+				if newState.id not in self.tree:
+					node = Node(newState)
+					self.addNode(node)
+					lg.logger_mcts.info('added node...%s...p = %f', node.id, simulationEdge.stats['P'])
+				else:
+					node = self.tree[newState.id]
+					lg.logger_mcts.info('existing node...%s...', node.id)
+				simulationEdge.outNode = node
 			currentNode = simulationEdge.outNode
 			breadcrumbs.append(simulationEdge)
 

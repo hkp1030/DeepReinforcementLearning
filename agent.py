@@ -139,16 +139,7 @@ class Agent():
 			probs = probs[allowedActions]
 
 			for idx, action in enumerate(allowedActions):
-				newState, _, _ = leaf.state.takeAction(action)
-				if newState.id not in self.mcts.tree:
-					node = mc.Node(newState)
-					self.mcts.addNode(node)
-					lg.logger_mcts.info('added node...%s...p = %f', node.id, probs[idx])
-				else:
-					node = self.mcts.tree[newState.id]
-					lg.logger_mcts.info('existing node...%s...', node.id)
-
-				newEdge = mc.Edge(leaf, node, probs[idx], action)
+				newEdge = mc.Edge(leaf, None, probs[idx], action)
 				leaf.edges.append((action, newEdge))
 				
 		else:
