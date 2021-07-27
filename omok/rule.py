@@ -159,6 +159,19 @@ class Rule(object):
             for x in range(len(self.board[0])):
                 if self.board[y][x]:
                     continue
+                if not self.is_stone_within_2area(x, y):
+                    continue
                 if self.forbidden_point(x, y, stone):
                     coords.append((x, y))
         return coords
+
+    def is_stone_within_2area(self, x, y):
+        x_from = max(0, x-2)
+        x_to = min(board_size-1, x + 2) + 1
+        y_from = max(0, y-2)
+        y_to = min(board_size-1, y + 2) + 1
+        for y1 in range(y_from, y_to):
+            for x1 in range(x_from, x_to):
+                if self.board[y1][x1] != empty:
+                    return True
+        return False
