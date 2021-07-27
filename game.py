@@ -53,6 +53,7 @@ class GameState():
 	def __init__(self, board, playerTurn):
 		self.board = board
 		self.playerTurn = playerTurn
+		self.rule = Rule(np.reshape(self.board, (15, 15)))
 		self.pieces = {'1': 'O', '0': '-', '-1': 'X'}
 		self.binary = self._binary()
 		self.id = self._convertStateToId()
@@ -69,8 +70,7 @@ class GameState():
 		allowed.extend([i for i, stone in enumerate(self.board) if stone == 0])
 
 		if self.playerTurn == black_stone:
-			convert_board = np.reshape(self.board, (15, 15))
-			forbidden_points = Rule(convert_board).get_forbidden_points(self.playerTurn)
+			forbidden_points = self.rule.get_forbidden_points(self.playerTurn)
 			while forbidden_points:
 				x, y = forbidden_points.pop()
 				allowed.remove(y*15 + x)
@@ -108,8 +108,7 @@ class GameState():
 		if not self.allowedActions:
 			return 1
 
-		convert_board = np.reshape(self.board, (15, 15))
-		if Rule(convert_board).search_gameover(-self.playerTurn):
+		if self.rule.search_gameover(-self.playerTurn):
 			return 1
 
 		return 0

@@ -45,7 +45,7 @@ class Rule(object):
     def search_gameover(self, stone):
         for y in range(len(self.board)):
             for x in range(len(self.board[0])):
-                if self.board[y][x] == empty:
+                if self.board[y][x] != stone:
                     continue
                 if self.is_gameover(x, y, stone):
                     return True
