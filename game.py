@@ -8,7 +8,7 @@ class Game:
 	def __init__(self):
 		self.currentPlayer = black_stone
 		self.grid_shape = (15,15)
-		self.input_shape = (2,15,15)
+		self.input_shape = (3,15,15)
 		self.gameState = GameState(np.zeros(self.grid_shape[0]*self.grid_shape[1], dtype=np.int), black_stone)
 		self.actionSpace = np.zeros(self.grid_shape[0]*self.grid_shape[1], dtype=np.int)
 		self.pieces = {'1': 'O', '0': '-', '-1': 'X'}
@@ -83,13 +83,19 @@ class GameState():
 		return allowed
 
 	def _binary(self):
-		currentplayer_position = np.zeros(len(self.board), dtype=np.int)
-		currentplayer_position[self.board==self.playerTurn] = 1
+		black_stone_position = np.zeros(len(self.board), dtype=np.int)
+		black_stone_position[self.board == 1] = 1
 
-		other_position = np.zeros(len(self.board), dtype=np.int)
-		other_position[self.board==-self.playerTurn] = 1
+		white_stone_position = np.zeros(len(self.board), dtype=np.int)
+		white_stone_position[self.board == -1] = 1
 
-		position = np.append(currentplayer_position,other_position)
+		if self.playerTurn == 1:
+			player_turn = np.ones(len(self.board), dtype=np.int)
+		else:
+			player_turn = np.zeros(len(self.board), dtype=np.int)
+
+		position = np.append(black_stone_position, white_stone_position)
+		position = np.append(position, player_turn)
 
 		return (position)
 
