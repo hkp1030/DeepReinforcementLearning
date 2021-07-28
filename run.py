@@ -130,7 +130,7 @@ def main():
 
                 s['state'].render(lg.logger_memory)
 
-            ######## 신경망을 평가하기(TOURNAMENT) ########
+            ######## 신경망 평가하기(TOURNAMENT) ########
             print('TOURNAMENT...')
             scores, _, points, sp_scores = playMatches(best_player, current_player, config.EVAL_EPISODES,
                                                        lg.logger_tourney, turns_until_tau0=0, memory=None)
