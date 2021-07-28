@@ -28,8 +28,8 @@ def main():
 
     env = Game()
 
-    # If loading an existing neural network, copy the config file to root
-    if initialise.INITIAL_RUN_NUMBER != None:
+    # 기존 신경망을 로드하는 경우 구성 파일을 루트에 복사
+    if initialise.INITIAL_RUN_NUMBER is not None:
         copyfile(run_archive_folder + env.name + '/run' + str(initialise.INITIAL_RUN_NUMBER).zfill(4) + '/config.py',
                  './config.py')
 
