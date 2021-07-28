@@ -35,48 +35,50 @@ def main():
 
     import config
 
-    ######## LOAD MEMORIES IF NECESSARY ########
+    ######## 메모리 로드 ########
 
-    if initialise.INITIAL_MEMORY_VERSION == None:
+    if initialise.INITIAL_MEMORY_VERSION is None:
         memory = Memory(config.MEMORY_SIZE)
     else:
         print('LOADING MEMORY VERSION ' + str(initialise.INITIAL_MEMORY_VERSION) + '...')
         memory = pickle.load(open(run_archive_folder + env.name + '/run' + str(initialise.INITIAL_RUN_NUMBER).zfill(
             4) + "/memory/memory" + str(initialise.INITIAL_MEMORY_VERSION).zfill(4) + ".p", "rb"))
 
-    ######## LOAD MODEL IF NECESSARY ########
+    ######## 모델 로드 ########
 
-    # create an untrained neural network objects from the config file
+    # 훈련되지 않은 신경망 객체 생성
     current_NN = Residual_CNN(config.REG_CONST, config.LEARNING_RATE, env.input_shape, env.action_size,
                               config.HIDDEN_CNN_LAYERS)
     best_NN = Residual_CNN(config.REG_CONST, config.LEARNING_RATE, env.input_shape, env.action_size,
                            config.HIDDEN_CNN_LAYERS)
 
-    # If loading an existing neural netwrok, set the weights from that model
-    if initialise.INITIAL_MODEL_VERSION != None:
+    # 기존 신경망을 로드하는 경우 해당 모델의 가중치 설정
+    if initialise.INITIAL_MODEL_VERSION is not None:
         best_player_version = initialise.INITIAL_MODEL_VERSION
         print('LOADING MODEL VERSION ' + str(initialise.INITIAL_MODEL_VERSION) + '...')
         m_tmp = best_NN.read(env.name, initialise.INITIAL_RUN_NUMBER, best_player_version)
         current_NN.model.set_weights(m_tmp.get_weights())
         best_NN.model.set_weights(m_tmp.get_weights())
-    # otherwise just ensure the weights on the two players are the same
+    # 그렇지 않으면 두 신경망의 가중치를 동일하게 설정
     else:
         best_player_version = 0
         best_NN.model.set_weights(current_NN.model.get_weights())
 
-    # copy the config file to the run folder
+    # config.py 파일을 run 폴더에 복사
     copyfile('./config.py', run_folder + 'config.py')
     plot_model(current_NN.model, to_file=run_folder + 'models/model.png', show_shapes=True)
 
     print('\n')
 
-    ######## CREATE THE PLAYERS ########
+    ######## 에이전트 생성 ########
 
     current_player = Agent('current_player', env.state_size, env.action_size, config.MCTS_SIMS, config.CPUCT,
                            current_NN)
     best_player = Agent('best_player', env.state_size, env.action_size, config.MCTS_SIMS, config.CPUCT, best_NN)
     # user_player = User('player1', env.state_size, env.action_size)
     iteration = 0
+
+    ######## 학습 시작 ########
 
     while 1:
 
@@ -89,7 +91,7 @@ def main():
         lg.logger_main.info('BEST PLAYER VERSION: %d', best_player_version)
         print('BEST PLAYER VERSION ' + str(best_player_version))
 
-        ######## SELF PLAY ########
+        ######## 자가경기(SELF PLAY) ########
         print('SELF PLAYING ' + str(config.EPISODES) + ' EPISODES...')
         _, memory, _, _ = playMatches(best_player, best_player, config.EPISODES, lg.logger_main,
                                       turns_until_tau0=config.TURNS_UNTIL_TAU0, memory=memory)
@@ -99,7 +101,7 @@ def main():
 
         if len(memory.ltmemory) >= config.MEMORY_SIZE:
 
-            ######## RETRAINING ########
+            ######## 신경망 다시 학습하기(RETRAINING) ########
             print('RETRAINING...')
             current_player.replay(memory.ltmemory)
             print('')
@@ -128,7 +130,7 @@ def main():
 
                 s['state'].render(lg.logger_memory)
 
-            ######## TOURNAMENT ########
+            ######## 신경망을 평가하기(TOURNAMENT) ########
             print('TOURNAMENT...')
             scores, _, points, sp_scores = playMatches(best_player, current_player, config.EVAL_EPISODES,
                                                        lg.logger_tourney, turns_until_tau0=0, memory=None)
