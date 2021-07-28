@@ -112,7 +112,8 @@ def playMatches(player1, player2, EPISODES, logger, turns_until_tau0, memory = N
                             move['value'] = value
                         else:
                             move['value'] = -value
-                         
+
+                    logger.info('stmemory size : {}'.format(len(memory.stmemory)))
                     memory.commit_ltmemory()
              
                 if value == 1:
