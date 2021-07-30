@@ -6,11 +6,17 @@ from settings import run_folder
 ### WARNING: the mcts log file gets big quite quickly
 
 LOGGER_DISABLED = {
-'main':False
-, 'memory':False
-, 'tourney':False
-, 'mcts':False
-, 'model': False}
+    'main': False,
+    'memory': False,
+    'tourney': False,
+    'mcts': False,
+    'model': False
+}
+
+
+train_overall_loss = []
+train_value_loss = []
+train_policy_loss = []
 
 
 logger_mcts = setup_logger('logger_mcts', run_folder + 'logs/logger_mcts.log')
@@ -27,4 +33,3 @@ logger_memory.disabled = LOGGER_DISABLED['memory']
 
 logger_model = setup_logger('logger_model', run_folder + 'logs/logger_model.log')
 logger_model.disabled = LOGGER_DISABLED['model']
- 

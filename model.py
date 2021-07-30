@@ -3,6 +3,7 @@
 import logging
 import config
 import numpy as np
+import threading
 
 import matplotlib.pyplot as plt
 
@@ -20,6 +21,8 @@ import tensorflow.keras.backend as K
 from settings import run_folder, run_archive_folder
 
 class Gen_Model():
+	lock = threading.Lock()
+
 	def __init__(self, reg_const, learning_rate, input_dim, output_dim):
 		self.reg_const = reg_const
 		self.learning_rate = learning_rate
@@ -27,10 +30,12 @@ class Gen_Model():
 		self.output_dim = output_dim
 
 	def predict(self, x):
-		return self.model.predict(x)
+		with self.lock:
+			return self.model.predict(x)
 
 	def fit(self, states, targets, epochs, verbose, validation_split, batch_size):
-		return self.model.fit(states, targets, epochs=epochs, verbose=verbose, validation_split = validation_split, batch_size = batch_size)
+		with self.lock:
+			return self.model.fit(states, targets, epochs=epochs, verbose=verbose, validation_split = validation_split, batch_size = batch_size)
 
 	def write(self, game, version):
 		self.model.save(run_folder + 'models/version' + "{0:0>4}".format(version) + '.h5')
@@ -233,9 +238,9 @@ class Residual_CNN(Gen_Model):
 
 		model = Model(inputs=[main_input], outputs=[vh, ph])
 		model.compile(loss={'value_head': 'mean_squared_error', 'policy_head': softmax_cross_entropy_with_logits},
-			optimizer=SGD(lr=self.learning_rate, momentum = config.MOMENTUM),	
-			loss_weights={'value_head': 0.5, 'policy_head': 0.5}	
-			)
+					  optimizer=SGD(learning_rate=self.learning_rate, momentum=config.MOMENTUM),
+					  loss_weights={'value_head': 0.5, 'policy_head': 0.5}
+					  )
 
 		return model
 
