@@ -44,6 +44,11 @@ def playMatches(player1, player2, EPISODES, logger, turns_until_tau0, memory = N
     sp_scores = {'sp':0, "drawn": 0, 'nsp':0}
     points = {player1.name:[], player2.name:[]}
 
+    if goes_first == 0:
+        player1Starts = random.randint(0, 1) * 2 - 1
+    else:
+        player1Starts = goes_first
+
     for e in range(EPISODES):
 
         logger.info('====================')
@@ -58,11 +63,6 @@ def playMatches(player1, player2, EPISODES, logger, turns_until_tau0, memory = N
         turn = 0
         player1.mcts = None
         player2.mcts = None
-
-        if goes_first == 0:
-            player1Starts = random.randint(0,1) * 2 - 1
-        else:
-            player1Starts = goes_first
 
         if player1Starts == 1:
             players = {1:{"agent": player1, "name":player1.name}
@@ -105,7 +105,7 @@ def playMatches(player1, player2, EPISODES, logger, turns_until_tau0, memory = N
             env.gameState.render(logger)
 
             if done == 1: 
-                if memory != None:
+                if memory is not None:
                     #### If the game is finished, assign the values correctly to the game moves
                     for move in memory.stmemory:
                         if move['playerTurn'] == state.playerTurn:
@@ -141,5 +141,8 @@ def playMatches(player1, player2, EPISODES, logger, turns_until_tau0, memory = N
                 pts = state.get_score()
                 points[players[state.playerTurn]['name']].append(pts[0])
                 points[players[-state.playerTurn]['name']].append(pts[1])
+
+                if goes_first == 0:
+                    player1Starts = -player1Starts
 
     return (scores, memory, points, sp_scores)
