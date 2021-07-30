@@ -120,7 +120,7 @@ class GameState():
 			self.isEndGame = 1
 			return 1
 
-		if np.count_nonzero(self.board) > 210 and not self.get_allowed_actions():
+		if np.count_nonzero(self.board) > (15 * 15) - 15 and not self.get_allowed_actions():
 			self.isEndGame = 1
 			return 1
 
@@ -137,12 +137,16 @@ class GameState():
 		if self.value is not None:
 			return self.value
 
-		if self.is_end_game() == 1:
+		if np.count_nonzero(self.board) > (15 * 15) - 15 and not self.get_allowed_actions():
 			self.value = (-1, -1, 1)
 			return (-1, -1, 1)
-		else:
-			self.value = (0, 0, 0)
-			return (0, 0, 0)
+
+		if self.rule.search_gameover(-self.playerTurn):
+			self.value = (-1, -1, 1)
+			return (-1, -1, 1)
+
+		self.value = (0, 0, 0)
+		return (0, 0, 0)
 
 	def get_score(self):
 		if self.score is not None:
