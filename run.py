@@ -106,8 +106,7 @@ def main():
             current_player.replay(memory.ltmemory)
             print('')
 
-            if iteration % 5 == 0:
-                pickle.dump(memory, open(run_folder + "memory/memory" + str(iteration).zfill(4) + ".p", "wb"))
+            pickle.dump(memory, open(run_folder + "memory/memory" + str(iteration).zfill(4) + ".p", "wb"))
 
             lg.logger_memory.info('====================')
             lg.logger_memory.info('NEW MEMORIES')
