@@ -46,13 +46,6 @@ class Agent():
 
 		self.mcts = None
 
-		self.train_overall_loss = []
-		self.train_value_loss = []
-		self.train_policy_loss = []
-		self.val_overall_loss = []
-		self.val_value_loss = []
-		self.val_policy_loss = []
-
 	
 	def simulate(self):
 
@@ -187,17 +180,16 @@ class Agent():
 			fit = self.model.fit(training_states, training_targets, epochs=config.EPOCHS, verbose=1, validation_split=0, batch_size = 32)
 			lg.logger_mcts.info('NEW LOSS %s', fit.history)
 
-			self.train_overall_loss.append(round(fit.history['loss'][config.EPOCHS - 1],4))
-			self.train_value_loss.append(round(fit.history['value_head_loss'][config.EPOCHS - 1],4)) 
-			self.train_policy_loss.append(round(fit.history['policy_head_loss'][config.EPOCHS - 1],4)) 
+			lg.train_overall_loss.append(round(fit.history['loss'][config.EPOCHS - 1],4))
+			lg.train_value_loss.append(round(fit.history['value_head_loss'][config.EPOCHS - 1],4))
+			lg.train_policy_loss.append(round(fit.history['policy_head_loss'][config.EPOCHS - 1],4))
 
-		plt.plot(self.train_overall_loss, 'k')
-		plt.plot(self.train_value_loss, 'k:')
-		plt.plot(self.train_policy_loss, 'k--')
+		plt.plot(lg.train_overall_loss, 'k')
+		plt.plot(lg.train_value_loss, 'k:')
+		plt.plot(lg.train_policy_loss, 'k--')
 
 		plt.legend(['train_overall_loss', 'train_value_loss', 'train_policy_loss'], loc='lower left')
 
-		display.clear_output(wait=True)
 		display.display(pl.gcf())
 		pl.gcf().clear()
 		time.sleep(1.0)
