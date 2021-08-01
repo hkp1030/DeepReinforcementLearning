@@ -141,6 +141,7 @@ class Agent():
 			for idx, action in enumerate(allowedActions):
 				newEdge = mc.Edge(leaf, None, probs[idx], action)
 				leaf.edges.append((action, newEdge))
+			random.shuffle(leaf.edges)
 				
 		else:
 			lg.logger_mcts.info('GAME VALUE FOR %d: %f', leaf.playerTurn, value)
