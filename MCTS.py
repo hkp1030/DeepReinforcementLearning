@@ -4,6 +4,7 @@ import config
 
 from utils import setup_logger
 import loggers as lg
+import test
 
 class Node():
 
@@ -46,6 +47,7 @@ class MCTS():
 	def __len__(self):
 		return len(self.tree)
 
+	@test.running_time
 	def moveToLeaf(self):
 
 		lg.logger_mcts.info('------MOVING TO LEAF------')
@@ -92,8 +94,8 @@ class MCTS():
 
 			lg.logger_mcts.info('action with highest Q + U...%d', simulationAction)
 
-			newState, value, done = currentNode.state.takeAction(simulationAction) #the value of the newState from the POV of the new playerTurn
 			if simulationEdge.outNode is None:
+				newState, _, _ = currentNode.state.takeAction(simulationAction)
 				if newState.id not in self.tree:
 					node = Node(newState)
 					self.addNode(node)
@@ -105,12 +107,15 @@ class MCTS():
 			currentNode = simulationEdge.outNode
 			breadcrumbs.append(simulationEdge)
 
+		if currentNode.state.is_end_game():
+			value = currentNode.state.get_value()[0]
+			done = 1
+
 		lg.logger_mcts.info('DONE...%d', done)
 
 		return currentNode, value, done, breadcrumbs
 
-
-
+	@test.running_time
 	def backFill(self, leaf, value, breadcrumbs):
 		lg.logger_mcts.info('------DOING BACKFILL------')
 

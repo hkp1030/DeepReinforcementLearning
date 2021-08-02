@@ -6,6 +6,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 
+import tensorflow as tf
 from tensorflow.keras.models import Sequential, load_model, Model
 from tensorflow.keras.layers import Input, Dense, Conv2D, Flatten, BatchNormalization, Activation, LeakyReLU, add
 from tensorflow.keras.optimizers import SGD
@@ -18,6 +19,8 @@ import loggers as lg
 import tensorflow.keras.backend as K
 
 from settings import run_folder, run_archive_folder
+
+tf.compat.v1.disable_eager_execution()
 
 class Gen_Model():
 	def __init__(self, reg_const, learning_rate, input_dim, output_dim):

@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from IPython import display
 import pylab as pl
 
+import test
+
 
 class User():
 	def __init__(self, name, state_size, action_size):
@@ -78,12 +80,21 @@ class Agent():
 		else:
 			self.changeRootMCTS(state)
 
+		test.count = 0
+		test.running_time_dic = {}
+		start = time.time()
+
 		#### run the simulation
 		for sim in range(self.MCTSsimulations):
 			lg.logger_mcts.info('***************************')
 			lg.logger_mcts.info('****** SIMULATION %d ******', sim + 1)
 			lg.logger_mcts.info('***************************')
 			self.simulate()
+
+		print(test.count)
+		for name, t in test.running_time_dic.items():
+			print("{} 걸린 시간 : {}".format(name, t))
+		print('총 걸린 시간 :', time.time() - start)
 
 		#### get action values
 		pi, values = self.getAV(1)
@@ -102,12 +113,14 @@ class Agent():
 
 		return (action, pi, value, NN_value)
 
-
+	@test.running_time
 	def get_preds(self, state):
 		#predict the leaf
 		inputToModel = np.array([self.model.convertToModelInput(state)])
 
+		start = time.time()
 		preds = self.model.predict(inputToModel)
+		test.count += time.time() - start
 		value_array = preds[0]
 		logits_array = preds[1]
 		value = value_array[0]
@@ -126,7 +139,7 @@ class Agent():
 
 		return ((value, probs, allowedActions))
 
-
+	@test.running_time
 	def evaluateLeaf(self, leaf, value, done, breadcrumbs):
 
 		lg.logger_mcts.info('------EVALUATING LEAF------')
