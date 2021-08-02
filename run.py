@@ -42,6 +42,8 @@ else:
     print('LOADING MEMORY VERSION ' + str(initialise.INITIAL_MEMORY_VERSION) + '...')
     memory = pickle.load(open(run_archive_folder + env.name + '/run' + str(initialise.INITIAL_RUN_NUMBER).zfill(4) +
                               "/memory/memory" + str(initialise.INITIAL_MEMORY_VERSION).zfill(4) + ".p", "rb"))
+    memory.ltmemory = config.MEMORY_SIZE
+    memory.stmemory = config.MEMORY_SIZE
 
 ######## 모델 로드 ########
 
