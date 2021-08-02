@@ -19,6 +19,7 @@ import loggers as lg
 from settings import run_folder, run_archive_folder
 import initialise
 import pickle
+from collections import deque
 
 
 lg.logger_main.info('=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*')
@@ -40,10 +41,10 @@ if initialise.INITIAL_MEMORY_VERSION is None:
     memory = Memory(config.MEMORY_SIZE)
 else:
     print('LOADING MEMORY VERSION ' + str(initialise.INITIAL_MEMORY_VERSION) + '...')
-    memory = pickle.load(open(run_archive_folder + env.name + '/run' + str(initialise.INITIAL_RUN_NUMBER).zfill(4) +
+    memory = Memory(config.MEMORY_SIZE)
+    temp_memory = pickle.load(open(run_archive_folder + env.name + '/run' + str(initialise.INITIAL_RUN_NUMBER).zfill(4) +
                               "/memory/memory" + str(initialise.INITIAL_MEMORY_VERSION).zfill(4) + ".p", "rb"))
-    memory.ltmemory.maxlen = config.MEMORY_SIZE
-    memory.stmemory.maxlen = config.MEMORY_SIZE
+    memory.ltmemory = deque(iterable=temp_memory.ltmemory, maxlen=config.MEMORY_SIZE)
 
 ######## 모델 로드 ########
 
