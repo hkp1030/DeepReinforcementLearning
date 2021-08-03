@@ -1,6 +1,6 @@
 # 자가 경기
 EPISODES = 30
-MCTS_SIMS = 100
+MCTS_SIMS = 300
 MEMORY_SIZE = 180000
 TURNS_UNTIL_TAU0 = 10  # 결정론적으로(deterministically) 게임하기 시작하는 때
 CPUCT = 1

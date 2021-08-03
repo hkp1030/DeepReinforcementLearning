@@ -171,6 +171,14 @@ class GameState():
 
 		return (newState, value, done)
 
+	def next_state(self, action):
+		new_board = np.array(self.board)
+		new_board[action] = self.playerTurn
+
+		new_state = GameState(new_board, -self.playerTurn)
+
+		return new_state
+
 	def render(self, logger):
 		convert_board = np.reshape(self.board, (15, 15))
 		for stone in convert_board:

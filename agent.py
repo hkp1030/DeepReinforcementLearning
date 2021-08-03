@@ -58,13 +58,8 @@ class Agent():
 
 	def simulate(self):
 
-		lg.logger_mcts.info('ROOT NODE...%s', self.mcts.root.state.id)
-		self.mcts.root.state.render(lg.logger_mcts)
-		lg.logger_mcts.info('CURRENT PLAYER...%d', self.mcts.root.state.playerTurn)
-
 		##### MOVE THE LEAF NODE
 		leaf, value, done, breadcrumbs = self.mcts.moveToLeaf()
-		leaf.state.render(lg.logger_mcts)
 
 		##### EVALUATE THE LEAF NODE
 		value, breadcrumbs = self.evaluateLeaf(leaf, value, done, breadcrumbs)
@@ -80,21 +75,9 @@ class Agent():
 		else:
 			self.changeRootMCTS(state)
 
-		test.count = 0
-		test.running_time_dic = {}
-		start = time.time()
-
 		#### run the simulation
 		for sim in range(self.MCTSsimulations):
-			lg.logger_mcts.info('***************************')
-			lg.logger_mcts.info('****** SIMULATION %d ******', sim + 1)
-			lg.logger_mcts.info('***************************')
 			self.simulate()
-
-		print(test.count)
-		for name, t in test.running_time_dic.items():
-			print("{} 걸린 시간 : {}".format(name, t))
-		print('총 걸린 시간 :', time.time() - start)
 
 		#### get action values
 		pi, values = self.getAV(1)
@@ -106,21 +89,13 @@ class Agent():
 
 		NN_value = -self.get_preds(nextState)[0]
 
-		lg.logger_mcts.info('ACTION VALUES...%s', pi)
-		lg.logger_mcts.info('CHOSEN ACTION...%d', action)
-		lg.logger_mcts.info('MCTS PERCEIVED VALUE...%f', value)
-		lg.logger_mcts.info('NN PERCEIVED VALUE...%f', NN_value)
-
 		return (action, pi, value, NN_value)
 
-	@test.running_time
 	def get_preds(self, state):
 		#predict the leaf
 		inputToModel = np.array([self.model.convertToModelInput(state)])
 
-		start = time.time()
 		preds = self.model.predict(inputToModel)
-		test.count += time.time() - start
 		value_array = preds[0]
 		logits_array = preds[1]
 		value = value_array[0]
@@ -139,15 +114,9 @@ class Agent():
 
 		return ((value, probs, allowedActions))
 
-	@test.running_time
 	def evaluateLeaf(self, leaf, value, done, breadcrumbs):
-
-		lg.logger_mcts.info('------EVALUATING LEAF------')
-
 		if done == 0:
-	
 			value, probs, allowedActions = self.get_preds(leaf.state)
-			lg.logger_mcts.info('PREDICTED VALUE FOR %d: %f', leaf.state.playerTurn, value)
 
 			probs = probs[allowedActions]
 
@@ -155,9 +124,6 @@ class Agent():
 				newEdge = mc.Edge(leaf, None, probs[idx], action)
 				leaf.edges.append((action, newEdge))
 			random.shuffle(leaf.edges)
-				
-		else:
-			lg.logger_mcts.info('GAME VALUE FOR %d: %f', leaf.playerTurn, value)
 
 		return ((value, breadcrumbs))
 
@@ -188,8 +154,6 @@ class Agent():
 		return action, value
 
 	def replay(self, ltmemory):
-		lg.logger_mcts.info('******RETRAINING MODEL******')
-
 
 		for i in range(config.TRAINING_LOOPS):
 			minibatch = random.sample(ltmemory, min(config.BATCH_SIZE, len(ltmemory)))
@@ -199,7 +163,6 @@ class Agent():
 								, 'policy_head': np.array([row['AV'] for row in minibatch])} 
 
 			fit = self.model.fit(training_states, training_targets, epochs=config.EPOCHS, verbose=1, validation_split=0, batch_size = 32)
-			lg.logger_mcts.info('NEW LOSS %s', fit.history)
 
 			self.train_overall_loss.append(round(fit.history['loss'][config.EPOCHS - 1],4))
 			self.train_value_loss.append(round(fit.history['value_head_loss'][config.EPOCHS - 1],4))
@@ -224,10 +187,8 @@ class Agent():
 		return preds
 
 	def buildMCTS(self, state):
-		lg.logger_mcts.info('****** BUILDING NEW MCTS TREE FOR AGENT %s ******', self.name)
 		self.root = mc.Node(state)
 		self.mcts = mc.MCTS(self.root, self.cpuct)
 
 	def changeRootMCTS(self, state):
-		lg.logger_mcts.info('****** CHANGING ROOT OF MCTS TREE TO %s FOR AGENT %s ******', state.id, self.name)
 		self.mcts.root = self.mcts.tree[state.id]
