@@ -4,6 +4,11 @@ count = 0
 running_time_dic = {}
 
 
+def init():
+    global running_time_dic
+    running_time_dic = {}
+
+
 def running_time(func):
     def wrapper(*args, **kwargs):
         global running_time_dic

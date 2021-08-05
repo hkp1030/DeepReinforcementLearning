@@ -16,14 +16,11 @@ MOMENTUM = 0.9
 TRAINING_LOOPS = 10
 
 HIDDEN_CNN_LAYERS = [
-    {'filters': 128, 'kernel_size': (3, 3)},
-    {'filters': 128, 'kernel_size': (3, 3)},
-    {'filters': 128, 'kernel_size': (3, 3)},
-    {'filters': 128, 'kernel_size': (3, 3)},
-    {'filters': 128, 'kernel_size': (3, 3)},
-    {'filters': 128, 'kernel_size': (3, 3)},
-    {'filters': 128, 'kernel_size': (3, 3)},
+    {'filters': 192, 'kernel_size': (3, 3)},
 ]
+
+for i in range(15):
+    HIDDEN_CNN_LAYERS.append({'filters': 192, 'kernel_size': (3, 3)})
 
 # 평가
 EVAL_EPISODES = 20
