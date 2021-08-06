@@ -57,14 +57,14 @@ class GameState():
 		self.pieces = {'1': 'O', '0': '-', '-1': 'X'}
 		self.binary = self._binary()
 		self.id = self._convertStateToId()
-		self.allowedActions = None
-		self.isEndGame = None
-		self.value = None
-		self.score = None
+		self._allowedActions = None
+		self._isEndGame = None
+		self._value = None
+		self._score = None
 
 	def get_allowed_actions(self):
-		if self.allowedActions is not None:
-			return self.allowedActions
+		if self._allowedActions is not None:
+			return self._allowedActions
 
 		if np.all(self.board == 0):
 			return [112]
@@ -78,7 +78,7 @@ class GameState():
 				x, y = forbidden_points.pop()
 				allowed.remove(y*15 + x)
 
-		self.allowedActions = allowed
+		self._allowedActions = allowed
 
 		return allowed
 
@@ -113,47 +113,47 @@ class GameState():
 		return id
 
 	def is_end_game(self):
-		if self.isEndGame is not None:
-			return self.isEndGame
+		if self._isEndGame is not None:
+			return self._isEndGame
 
 		if np.count_nonzero(self.board) == 15 * 15:
-			self.isEndGame = 1
+			self._isEndGame = 1
 			return 1
 
 		if np.count_nonzero(self.board) > (15 * 15) - 15 and not self.get_allowed_actions():
-			self.isEndGame = 1
+			self._isEndGame = 1
 			return 1
 
 		if self.rule.search_gameover(-self.playerTurn):
-			self.isEndGame = 1
+			self._isEndGame = 1
 			return 1
 
-		self.isEndGame = 0
+		self._isEndGame = 0
 		return 0
 
 	def get_value(self):
 		# This is the value of the state for the current player
 		# i.e. if the previous player played a winning move, you lose
-		if self.value is not None:
-			return self.value
+		if self._value is not None:
+			return self._value
 
 		if np.count_nonzero(self.board) > (15 * 15) - 15 and not self.get_allowed_actions():
-			self.value = (-1, -1, 1)
+			self._value = (-1, -1, 1)
 			return (-1, -1, 1)
 
 		if self.rule.search_gameover(-self.playerTurn):
-			self.value = (-1, -1, 1)
+			self._value = (-1, -1, 1)
 			return (-1, -1, 1)
 
-		self.value = (0, 0, 0)
+		self._value = (0, 0, 0)
 		return (0, 0, 0)
 
 	def get_score(self):
-		if self.score is not None:
-			return self.score
+		if self._score is not None:
+			return self._score
 
 		tmp = self.get_value()
-		self.score = (tmp[1], tmp[2])
+		self._score = (tmp[1], tmp[2])
 		return (tmp[1], tmp[2])
 
 	def takeAction(self, action):
