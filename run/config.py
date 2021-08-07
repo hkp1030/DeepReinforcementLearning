@@ -1,6 +1,6 @@
 # 자가 경기
-EPISODES = 30
-MCTS_SIMS = 300
+EPISODES = 100
+MCTS_SIMS = 100
 MEMORY_SIZE = 180000
 TURNS_UNTIL_TAU0 = 10  # 결정론적으로(deterministically) 게임하기 시작하는 때
 CPUCT = 1
@@ -23,5 +23,5 @@ for i in range(15):
     HIDDEN_CNN_LAYERS.append({'filters': 192, 'kernel_size': (3, 3)})
 
 # 평가
-EVAL_EPISODES = 20
-SCORING_THRESHOLD = 1.3
+EVAL_EPISODES = 30
+SCORING_THRESHOLD = 0.55
