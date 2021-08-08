@@ -6,6 +6,7 @@ from shutil import copyfile
 import random
 from importlib import reload
 
+from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import plot_model
 
 from game import Game, GameState
@@ -13,6 +14,7 @@ from agent import Agent
 from memory import Memory
 from model import Residual_CNN
 from funcs import playMatches, playMatchesBetweenVersions
+from loss import softmax_cross_entropy_with_logits
 
 import loggers as lg
 
@@ -74,11 +76,36 @@ print('\n')
 
 ######## 에이전트 생성 ########
 
-current_player = Agent('current_player', env.state_size, env.action_size, config.MCTS_SIMS, config.CPUCT,
-                       current_NN)
+current_player = Agent('current_player', env.state_size, env.action_size, config.MCTS_SIMS, config.CPUCT, current_NN)
 best_player = Agent('best_player', env.state_size, env.action_size, config.MCTS_SIMS, config.CPUCT, best_NN)
 # user_player = User('player1', env.state_size, env.action_size)
 iteration = 0
+
+######## temp 폴더에서 모델, 메모리 로드 ########
+
+# temp 폴더에서 current_NN 갱신
+try:
+    m_tmp = load_model('temp/model.h5', custom_objects={'softmax_cross_entropy_with_logits': softmax_cross_entropy_with_logits})
+    current_NN.model.set_weights(m_tmp.get_weights())
+    lg.logger_main.info('temp model download.')
+    print('임시 모델 다운로드')
+except Exception as e:
+    lg.logger_main.info('temp model download failed!')
+    lg.logger_main.info(e)
+    print('temp model download failed!')
+    print(e)
+
+# temp 폴더에서 memory 갱신
+try:
+    with open("temp/memory.p", "rb") as file:
+        memory = Memory(config.MEMORY_SIZE)
+        temp_memory = pickle.load(file)
+        memory.ltmemory = deque(iterable=temp_memory.ltmemory, maxlen=config.MEMORY_SIZE)
+except Exception as e:
+    lg.logger_tourney.info('temp memory download failed!')
+    lg.logger_tourney.info(e)
+    print('temp memory download failed!')
+    print(e)
 
 ######## 학습 시작 ########
 
@@ -101,6 +128,11 @@ while 1:
 
     memory.clear_stmemory()
 
+    # temp 폴더에 memory 업로드
+    pickle.dump(memory, open("temp/memory.p", "wb"))
+    lg.logger_main.info('temp memory upload.')
+    print('임시 메모리 업로드')
+
     if len(memory.ltmemory) >= config.MEMORY_SIZE:
 
         ######## 신경망 다시 학습하기(RETRAINING) ########
@@ -108,7 +140,12 @@ while 1:
         current_player.replay(memory.ltmemory)
         print('')
 
-        if iteration % 2 == 0:
+        # temp 폴더에 current_NN 업로드
+        current_NN.model.save('temp/model.h5')
+        lg.logger_tourney.info('temp model upload.')
+        print('임시 모델 업로드')
+
+        if iteration % 1 == 0:
             pickle.dump(memory, open(run_folder + "memory/memory" + str(iteration).zfill(4) + ".p", "wb"))
 
         lg.logger_memory.info('====================')
@@ -132,6 +169,8 @@ while 1:
 
             s['state'].render(lg.logger_memory)
 
+        memory.clear_ltmemory()
+
         ######## 신경망 평가하기(TOURNAMENT) ########
         print('TOURNAMENT...')
         scores, _, points, sp_scores = playMatches(best_player, current_player, config.EVAL_EPISODES,
@@ -152,6 +191,7 @@ while 1:
 
         print('\n\n')
 
+        # current_player의 승률이 일정 수치 이상이면 best_player 교체
         if scores['current_player'] / (scores['current_player'] + scores['best_player']) >= config.SCORING_THRESHOLD:
             best_player_version = best_player_version + 1
             best_NN.model.set_weights(current_NN.model.get_weights())

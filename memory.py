@@ -26,4 +26,7 @@ class Memory:
 
 	def clear_stmemory(self):
 		self.stmemory = deque(maxlen=config.MEMORY_SIZE)
+
+	def clear_ltmemory(self):
+		self.ltmemory = deque(maxlen=config.MEMORY_SIZE)
 		
