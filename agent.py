@@ -76,8 +76,13 @@ class Agent():
 			self.changeRootMCTS(state)
 
 		#### run the simulation
+		test.init()
+		start = time.time()
 		for sim in range(self.MCTSsimulations):
 			self.simulate()
+		test.print_running_time()
+		print('총 걸린 시간 :', time.time() - start)
+		print('------------------------------')
 
 		#### get action values
 		pi, values = self.getAV(1)
@@ -154,9 +159,16 @@ class Agent():
 		return action, value
 
 	def replay(self, ltmemory):
+		temp_memory = ltmemory[:]
 
 		for i in range(config.TRAINING_LOOPS):
-			minibatch = random.sample(ltmemory, min(config.BATCH_SIZE, len(ltmemory)))
+			if len(temp_memory) == 0:
+				break
+
+			random.shuffle(temp_memory)
+			batch_size = min(config.BATCH_SIZE, len(temp_memory))
+			minibatch = temp_memory[:batch_size]
+			temp_memory = temp_memory[batch_size:]
 
 			training_states = np.array([self.model.convertToModelInput(row['state']) for row in minibatch])
 			training_targets = {'value_head': np.array([row['value'] for row in minibatch])
