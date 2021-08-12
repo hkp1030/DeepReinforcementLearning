@@ -76,13 +76,8 @@ class Agent():
 			self.changeRootMCTS(state)
 
 		#### run the simulation
-		test.init()
-		start = time.time()
 		for sim in range(self.MCTSsimulations):
 			self.simulate()
-		test.print_running_time()
-		print('총 걸린 시간 :', time.time() - start)
-		print('------------------------------')
 
 		#### get action values
 		pi, values = self.getAV(1)
@@ -159,7 +154,7 @@ class Agent():
 		return action, value
 
 	def replay(self, ltmemory):
-		temp_memory = ltmemory[:]
+		temp_memory = list(ltmemory)
 
 		for i in range(config.TRAINING_LOOPS):
 			if len(temp_memory) == 0:
