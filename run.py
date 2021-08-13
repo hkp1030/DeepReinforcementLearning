@@ -178,13 +178,13 @@ while 1:
 
         lg.logger_tourney.info('SCORES')
         lg.logger_tourney.info(scores)
-        lg.logger_tourney.info('win rate : {}'.format(scores['current_player'] / (scores['current_player'] + scores['best_player'])))
+        lg.logger_tourney.info('win rate : {:.2f}'.format(scores['current_player'] / (scores['current_player'] + scores['best_player'])))
         lg.logger_tourney.info('STARTING PLAYER / NON-STARTING PLAYER SCORES')
         lg.logger_tourney.info(sp_scores)
 
         print('\nSCORES')
         print(scores)
-        print('win rate :', scores['current_player'] / (scores['current_player'] + scores['best_player']))
+        print('win rate : {:.2f}'.format(scores['current_player'] / (scores['current_player'] + scores['best_player'])))
         print('\nSTARTING PLAYER / NON-STARTING PLAYER SCORES')
         print(sp_scores)
         # print(points)
