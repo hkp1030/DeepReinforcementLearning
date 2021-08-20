@@ -1,6 +1,7 @@
+import numpy as np
 import pygame, sys
 from pygame.locals import *
-from rule import *
+from rule_c import *
 
 bg_color = (128, 128, 128)
 black = (0, 0, 0)
@@ -48,7 +49,7 @@ def run_game(surface, omok, menu):
 
 class Omok(object):
     def __init__(self, surface):
-        self.board = [[0 for i in range(board_size)] for j in range(board_size)]
+        self.board = np.zeros(shape=(board_size, board_size), dtype=np.int)
         self.menu = Menu(surface)
         self.rule = Rule(self.board)
         self.surface = surface
@@ -134,9 +135,6 @@ class Omok(object):
         self.id += increase
         self.turn = white_stone if self.turn == black_stone else black_stone
         self.check_forbidden()
-        for b in self.board:
-            print(b)
-        print('---------------------------------------------------')
 
         
     def undo(self):

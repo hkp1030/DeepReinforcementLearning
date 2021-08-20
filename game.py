@@ -1,6 +1,6 @@
 import numpy as np
 import logging
-from omok.rule import *
+from omok.rule_c import *
 
 
 class Game:
