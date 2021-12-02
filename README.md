@@ -3,4 +3,6 @@
 
 https://adsp.ai/blog/how-to-build-your-own-alphazero-ai-using-python-and-keras/
 
+https://github.com/AppliedDataSciencePartners/DeepReinforcementLearning
+
 https://github.com/JungwanLim/Omok-GUI-with-Gdiplus
