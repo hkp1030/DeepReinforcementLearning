@@ -1,6 +1,6 @@
-# DeepReinforcementLearning
-A replica of the AlphaZero methodology in Python
+# 알파제로 알고리즘을 이용한 오목 인공지능
 
-See this article for a summary of the algorithm and run instructions.
 
 https://adsp.ai/blog/how-to-build-your-own-alphazero-ai-using-python-and-keras/
+
+https://github.com/JungwanLim/Omok-GUI-with-Gdiplus
